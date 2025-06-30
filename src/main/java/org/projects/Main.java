@@ -1,11 +1,12 @@
 package org.projects;
 
 import org.projects.Utils.DatabaseUtils;
+import org.projects.View.LoginView;
 
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
     public static void main(String[] args) {
-        DatabaseUtils.testConnection();
+        new LoginView();
     }
 }

@@ -1,53 +1,38 @@
 --create database quanlicuahangsach;
 
+
+-- ========================
+-- DROP TABLES IF EXISTS (Xoá theo thứ tự phụ thuộc ngược)
+-- ========================
+DROP TABLE IF EXISTS
+    Review, Invoice, CartItem, Cart,
+    OrderItem, "Order", ImportOrderDetail, ImportOrder,
+    Inventory, BookAuthor, Book,
+    Customer, Staff, UserAccount,
+    Promotion, PaymentMethod,
+    Author, Publisher, Category,
+    Supplier, Role
+    CASCADE;
+
+-- ========================
+-- CREATE TABLES (21 bảng)
+-- ========================
+
+-- (1) Role
 CREATE TABLE Role (
                       roleID SERIAL PRIMARY KEY,
                       roleName VARCHAR(50) NOT NULL UNIQUE,
                       description TEXT
 );
 
--- 2. Tạo bảng UserAccount (tài khoản người dùng)
-CREATE TABLE UserAccount (
-                             id SERIAL PRIMARY KEY,
-                             username VARCHAR(50) NOT NULL UNIQUE,
-                             password VARCHAR(255) NOT NULL,
-                             role VARCHAR(20) NOT NULL CHECK (role IN ('ADMIN', 'STAFF', 'CUSTOMER')),
-                             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- 3. Tạo bảng Staff (nhân viên)
-CREATE TABLE Staff (
-                       staffID SERIAL PRIMARY KEY,
-                       staffName VARCHAR(100) NOT NULL,
-                       position VARCHAR(50),
-                       staffPhone VARCHAR(15),
-                       email VARCHAR(100),
-                       salary DECIMAL(12,2),
-                       hire_date DATE,
-                       user_id INTEGER REFERENCES UserAccount(id)
-);
-
--- 4. Tạo bảng Customer (khách hàng)
-CREATE TABLE Customer (
-                          customerID SERIAL PRIMARY KEY,
-                          customerName VARCHAR(100) NOT NULL,
-                          customerPhone VARCHAR(15),
-                          customerMail VARCHAR(100),
-                          address TEXT,
-                          date_of_birth DATE,
-                          gender VARCHAR(10),
-                          user_id INTEGER REFERENCES UserAccount(id)
-);
-
--- 5. Tạo bảng Category (danh mục sách)
+-- (2) Category
 CREATE TABLE Category (
                           categoryID SERIAL PRIMARY KEY,
                           categoryName VARCHAR(100) NOT NULL,
                           description TEXT
 );
 
--- 6. Tạo bảng Publisher (nhà xuất bản)
+-- (3) Publisher
 CREATE TABLE Publisher (
                            publisherID SERIAL PRIMARY KEY,
                            publisherName VARCHAR(100) NOT NULL,
@@ -56,7 +41,7 @@ CREATE TABLE Publisher (
                            email VARCHAR(100)
 );
 
--- 7. Tạo bảng Author (tác giả)
+-- (4) Author
 CREATE TABLE Author (
                         authorID SERIAL PRIMARY KEY,
                         authorName VARCHAR(100) NOT NULL,
@@ -65,32 +50,7 @@ CREATE TABLE Author (
                         nationality VARCHAR(50)
 );
 
--- 8. Tạo bảng Book (sách)
-CREATE TABLE Book (
-                      bookID SERIAL PRIMARY KEY,
-                      bookName VARCHAR(200) NOT NULL,
-                      bookAuthor VARCHAR(200), -- Tạm thời giữ để tương thích
-                      yearOfPublication INTEGER,
-                      bookPrice DECIMAL(10,2) NOT NULL,
-                      category VARCHAR(50), -- Tạm thời giữ để tương thích
-                      description TEXT,
-                      stock_quantity INTEGER DEFAULT 0,
-                      isbn VARCHAR(20),
-                      pages INTEGER,
-                      language VARCHAR(20) DEFAULT 'Vietnamese',
-                      publisherID INTEGER REFERENCES Publisher(publisherID),
-                      categoryID INTEGER REFERENCES Category(categoryID),
-                      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- 9. Tạo bảng BookAuthor (liên kết sách và tác giả - nhiều nhiều)
-CREATE TABLE BookAuthor (
-                            bookID INTEGER REFERENCES Book(bookID) ON DELETE CASCADE,
-                            authorID INTEGER REFERENCES Author(authorID) ON DELETE CASCADE,
-                            PRIMARY KEY (bookID, authorID)
-);
-
--- 10. Tạo bảng Supplier (nhà cung cấp)
+-- (5) Supplier
 CREATE TABLE Supplier (
                           supplierID SERIAL PRIMARY KEY,
                           supplierName VARCHAR(100) NOT NULL,
@@ -100,87 +60,14 @@ CREATE TABLE Supplier (
                           contact_person VARCHAR(100)
 );
 
--- 11. Tạo bảng ImportOrder (đơn nhập hàng)
-CREATE TABLE ImportOrder (
-                             importOrderID SERIAL PRIMARY KEY,
-                             supplierID INTEGER REFERENCES Supplier(supplierID),
-                             staffID INTEGER REFERENCES Staff(staffID),
-                             import_date DATE DEFAULT CURRENT_DATE,
-                             total_amount DECIMAL(12,2),
-                             status VARCHAR(20) DEFAULT 'PENDING',
-                             notes TEXT
-);
-
--- 12. Tạo bảng ImportOrderDetail (chi tiết đơn nhập hàng)
-CREATE TABLE ImportOrderDetail (
-                                   importOrderID INTEGER REFERENCES ImportOrder(importOrderID) ON DELETE CASCADE,
-                                   bookID INTEGER REFERENCES Book(bookID),
-                                   quantity INTEGER NOT NULL,
-                                   unit_price DECIMAL(10,2) NOT NULL,
-                                   subtotal DECIMAL(12,2) GENERATED ALWAYS AS (quantity * unit_price) STORED,
-                                   PRIMARY KEY (importOrderID, bookID)
-);
-
--- 13. Tạo bảng Order (đơn hàng)
-CREATE TABLE "Order" (
-                         orderID SERIAL PRIMARY KEY,
-                         customerID INTEGER REFERENCES Customer(customerID),
-                         orderDate DATE DEFAULT CURRENT_DATE,
-                         orderStatus VARCHAR(20) DEFAULT 'PENDING',
-                         total_amount DECIMAL(12,2),
-                         shipping_address TEXT,
-                         payment_method VARCHAR(20),
-                         notes TEXT
-);
-
--- 14. Tạo bảng OrderItem (chi tiết đơn hàng)
-CREATE TABLE OrderItem (
-                           orderID INTEGER REFERENCES "Order"(orderID) ON DELETE CASCADE,
-                           bookID INTEGER REFERENCES Book(bookID),
-                           quantity INTEGER NOT NULL,
-                           price DECIMAL(10,2) NOT NULL,
-                           subtotal DECIMAL(12,2) GENERATED ALWAYS AS (quantity * price) STORED,
-                           PRIMARY KEY (orderID, bookID)
-);
-
--- 15. Tạo bảng Cart (giỏ hàng)
-CREATE TABLE Cart (
-                      cartID SERIAL PRIMARY KEY,
-                      customerID INTEGER REFERENCES Customer(customerID) ON DELETE CASCADE,
-                      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- 16. Tạo bảng CartItem (chi tiết giỏ hàng)
-CREATE TABLE CartItem (
-                          cartID INTEGER REFERENCES Cart(cartID) ON DELETE CASCADE,
-                          bookID INTEGER REFERENCES Book(bookID),
-                          quantity INTEGER NOT NULL DEFAULT 1,
-                          added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                          PRIMARY KEY (cartID, bookID)
-);
-
--- 17. Tạo bảng PaymentMethod (phương thức thanh toán)
+-- (6) PaymentMethod
 CREATE TABLE PaymentMethod (
                                methodName VARCHAR(50) PRIMARY KEY,
                                description TEXT,
                                is_active BOOLEAN DEFAULT TRUE
 );
 
--- 18. Tạo bảng Invoice (hóa đơn)
-CREATE TABLE Invoice (
-                         invoiceID SERIAL PRIMARY KEY,
-                         orderID INTEGER REFERENCES "Order"(orderID),
-                         paymentMethod VARCHAR(50) REFERENCES PaymentMethod(methodName),
-                         totalAmount DECIMAL(12,2) NOT NULL,
-                         issueDate DATE DEFAULT CURRENT_DATE,
-                         dueDate DATE,
-                         staffID INTEGER REFERENCES Staff(staffID),
-                         tax_amount DECIMAL(10,2) DEFAULT 0,
-                         discount_amount DECIMAL(10,2) DEFAULT 0
-);
-
--- 19. Tạo bảng Promotion (khuyến mãi)
+-- (7) Promotion
 CREATE TABLE Promotion (
                            promotionID SERIAL PRIMARY KEY,
                            promotionTitle VARCHAR(200) NOT NULL,
@@ -192,23 +79,180 @@ CREATE TABLE Promotion (
                            min_order_amount DECIMAL(10,2) DEFAULT 0
 );
 
--- 20. Tạo bảng Inventory (tồn kho)
-CREATE TABLE Inventory (
-                           inventoryID SERIAL PRIMARY KEY,
-                           bookID INTEGER REFERENCES Book(bookID) ON DELETE CASCADE,
-                           housing_stock_quantity INTEGER NOT NULL DEFAULT 0,
-                           reserved_quantity INTEGER DEFAULT 0,
-                           last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+-- (8) UserAccount
+CREATE TABLE UserAccount (
+                             id SERIAL PRIMARY KEY,
+                             username VARCHAR(50) NOT NULL UNIQUE,
+                             password VARCHAR(255) NOT NULL,
+                             role VARCHAR(50),
+                             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                             CONSTRAINT fk_user_role FOREIGN KEY (role) REFERENCES Role(roleName) ON DELETE SET NULL
 );
 
--- 21. Tạo bảng Review (đánh giá)
+-- (9) Staff
+CREATE TABLE Staff (
+                       staffID SERIAL PRIMARY KEY,
+                       staffName VARCHAR(100) NOT NULL,
+                       position VARCHAR(50),
+                       staffPhone VARCHAR(15),
+                       email VARCHAR(100),
+                       salary DECIMAL(12,2),
+                       hire_date DATE,
+                       user_id INTEGER,
+                       CONSTRAINT fk_staff_user FOREIGN KEY (user_id) REFERENCES UserAccount(id) ON DELETE SET NULL
+);
+
+-- (10) Customer
+CREATE TABLE Customer (
+                          customerID SERIAL PRIMARY KEY,
+                          customerName VARCHAR(100) NOT NULL,
+                          customerPhone VARCHAR(15),
+                          customerMail VARCHAR(100),
+                          address TEXT,
+                          date_of_birth DATE,
+                          gender VARCHAR(10),
+                          user_id INTEGER,
+                          CONSTRAINT fk_customer_user FOREIGN KEY (user_id) REFERENCES UserAccount(id) ON DELETE SET NULL
+);
+
+-- (11) Book
+CREATE TABLE Book (
+                      bookID SERIAL PRIMARY KEY,
+                      bookName VARCHAR(200) NOT NULL,
+                      bookAuthor VARCHAR(200),
+                      yearOfPublication INTEGER,
+                      bookPrice DECIMAL(10,2) NOT NULL,
+                      category VARCHAR(50),
+                      description TEXT,
+                      stock_quantity INTEGER DEFAULT 0,
+                      isbn VARCHAR(20),
+                      pages INTEGER,
+                      language VARCHAR(20) DEFAULT 'Vietnamese',
+                      publisherID INTEGER,
+                      categoryID INTEGER,
+                      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                      CONSTRAINT fk_book_publisher FOREIGN KEY (publisherID) REFERENCES Publisher(publisherID) ON DELETE SET NULL,
+                      CONSTRAINT fk_book_category FOREIGN KEY (categoryID) REFERENCES Category(categoryID) ON DELETE SET NULL
+);
+
+-- (12) BookAuthor
+CREATE TABLE BookAuthor (
+                            bookID INTEGER,
+                            authorID INTEGER,
+                            PRIMARY KEY (bookID, authorID),
+                            FOREIGN KEY (bookID) REFERENCES Book(bookID) ON DELETE CASCADE,
+                            FOREIGN KEY (authorID) REFERENCES Author(authorID) ON DELETE CASCADE
+);
+
+-- (13) Inventory
+CREATE TABLE Inventory (
+                           inventoryID SERIAL PRIMARY KEY,
+                           bookID INTEGER,
+                           housing_stock_quantity INTEGER NOT NULL DEFAULT 0,
+                           reserved_quantity INTEGER DEFAULT 0,
+                           last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                           FOREIGN KEY (bookID) REFERENCES Book(bookID) ON DELETE CASCADE
+);
+
+-- (14) ImportOrder
+CREATE TABLE ImportOrder (
+                             importOrderID SERIAL PRIMARY KEY,
+                             supplierID INTEGER,
+                             staffID INTEGER,
+                             import_date DATE DEFAULT CURRENT_DATE,
+                             total_amount DECIMAL(12,2),
+                             status VARCHAR(20) DEFAULT 'PENDING',
+                             notes TEXT,
+                             CONSTRAINT fk_import_supplier FOREIGN KEY (supplierID) REFERENCES Supplier(supplierID) ON DELETE SET NULL,
+                             CONSTRAINT fk_import_staff FOREIGN KEY (staffID) REFERENCES Staff(staffID) ON DELETE SET NULL
+);
+
+-- (15) ImportOrderDetail
+CREATE TABLE ImportOrderDetail (
+                                   importOrderID INTEGER,
+                                   bookID INTEGER,
+                                   quantity INTEGER NOT NULL,
+                                   unit_price DECIMAL(10,2) NOT NULL,
+                                   subtotal DECIMAL(12,2) GENERATED ALWAYS AS (quantity * unit_price) STORED,
+                                   PRIMARY KEY (importOrderID, bookID),
+                                   FOREIGN KEY (importOrderID) REFERENCES ImportOrder(importOrderID) ON DELETE CASCADE,
+                                   FOREIGN KEY (bookID) REFERENCES Book(bookID)
+);
+
+-- (16) "Order"
+CREATE TABLE "Order" (
+                         orderID SERIAL PRIMARY KEY,
+                         customerID INTEGER,
+                         orderDate DATE DEFAULT CURRENT_DATE,
+                         orderStatus VARCHAR(20) DEFAULT 'PENDING',
+                         total_amount DECIMAL(12,2),
+                         shipping_address TEXT,
+                         payment_method VARCHAR(20),
+                         notes TEXT,
+                         promotionID INTEGER,
+                         FOREIGN KEY (customerID) REFERENCES Customer(customerID) ON DELETE SET NULL,
+                         FOREIGN KEY (promotionID) REFERENCES Promotion(promotionID) ON DELETE SET NULL
+);
+
+-- (17) OrderItem
+CREATE TABLE OrderItem (
+                           orderID INTEGER,
+                           bookID INTEGER,
+                           quantity INTEGER NOT NULL,
+                           price DECIMAL(10,2) NOT NULL,
+                           subtotal DECIMAL(12,2) GENERATED ALWAYS AS (quantity * price) STORED,
+                           PRIMARY KEY (orderID, bookID),
+                           FOREIGN KEY (orderID) REFERENCES "Order"(orderID) ON DELETE CASCADE,
+                           FOREIGN KEY (bookID) REFERENCES Book(bookID)
+);
+
+-- (18) Cart
+CREATE TABLE Cart (
+                      cartID SERIAL PRIMARY KEY,
+                      customerID INTEGER,
+                      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                      FOREIGN KEY (customerID) REFERENCES Customer(customerID) ON DELETE CASCADE
+);
+
+-- (19) CartItem
+CREATE TABLE CartItem (
+                          cartID INTEGER,
+                          bookID INTEGER,
+                          quantity INTEGER NOT NULL DEFAULT 1,
+                          added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                          PRIMARY KEY (cartID, bookID),
+                          FOREIGN KEY (cartID) REFERENCES Cart(cartID) ON DELETE CASCADE,
+                          FOREIGN KEY (bookID) REFERENCES Book(bookID)
+);
+
+-- (20) Invoice
+CREATE TABLE Invoice (
+                         invoiceID SERIAL PRIMARY KEY,
+                         orderID INTEGER,
+                         paymentMethod VARCHAR(50),
+                         totalAmount DECIMAL(12,2) NOT NULL,
+                         issueDate DATE DEFAULT CURRENT_DATE,
+                         dueDate DATE,
+                         staffID INTEGER,
+                         tax_amount DECIMAL(10,2) DEFAULT 0,
+                         discount_amount DECIMAL(10,2) DEFAULT 0,
+                         FOREIGN KEY (orderID) REFERENCES "Order"(orderID) ON DELETE CASCADE,
+                         FOREIGN KEY (paymentMethod) REFERENCES PaymentMethod(methodName) ON DELETE SET NULL,
+                         FOREIGN KEY (staffID) REFERENCES Staff(staffID) ON DELETE SET NULL
+);
+
+-- (21) Review
 CREATE TABLE Review (
                         reviewID SERIAL PRIMARY KEY,
-                        bookID INTEGER REFERENCES Book(bookID) ON DELETE CASCADE,
-                        customerID INTEGER REFERENCES Customer(customerID),
+                        bookID INTEGER,
+                        customerID INTEGER,
                         rating INTEGER CHECK (rating >= 1 AND rating <= 5),
                         comment TEXT,
-                        review_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                        review_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        FOREIGN KEY (bookID) REFERENCES Book(bookID) ON DELETE CASCADE,
+                        FOREIGN KEY (customerID) REFERENCES Customer(customerID) ON DELETE SET NULL
 );
 
 
