@@ -2,6 +2,7 @@ package org.projects.View;
 
 import com.formdev.flatlaf.FlatLaf;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
+import org.projects.Controller.LoginController;
 import org.projects.Helper.RoundedRadiusHelper;
 import org.projects.Helper.StyleComponents;
 
@@ -12,7 +13,7 @@ public class LoginView extends JFrame {
         private JPanel topPanel;
         private JLabel iconMinusLabel;
         private JLabel iconCancelLabel;
-        private JLabel iconZoomLabel;
+//        private JLabel iconZoomLabel;
 
         private JPanel leftPanel;
         private JLabel iconBookStoreLabel;
@@ -26,6 +27,8 @@ public class LoginView extends JFrame {
         private JPasswordField passwordField;
         private JLabel registerNowLabel; // dang ki ngay
         private JButton  loginButton;
+
+        private LoginController lgController;
         public LoginView() {
             this.setTitle("Login");
             this.setSize(1000,600);
@@ -33,6 +36,7 @@ public class LoginView extends JFrame {
             this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             RoundedRadiusHelper.radiusForFrame(this,25);
             this.setLayout(new BorderLayout());
+            lgController = new LoginController(this);
             this.init();
             this.setVisible(true);
         }
@@ -40,13 +44,13 @@ public class LoginView extends JFrame {
             topPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT,10,10));
             topPanel.setPreferredSize(new Dimension(1000,50));
             FlatSVGIcon iconMinus = new FlatSVGIcon("icon/minus.svg",30,30);
-            FlatSVGIcon iconZoom = new FlatSVGIcon("icon/zoom.svg",30,30);
+//            FlatSVGIcon iconZoom = new FlatSVGIcon("icon/zoom.svg",30,30);
             FlatSVGIcon iconCancel = new FlatSVGIcon("icon/cancel.svg",20,20);
             iconMinusLabel = new JLabel(iconMinus,JLabel.CENTER);
-            iconZoomLabel = new JLabel(iconZoom,JLabel.CENTER);
+//            iconZoomLabel = new JLabel(iconZoom,JLabel.CENTER);
             iconCancelLabel = new JLabel(iconCancel,JLabel.CENTER);
             topPanel.add(iconMinusLabel);
-            topPanel.add(iconZoomLabel);
+//            topPanel.add(iconZoomLabel);
             topPanel.add(iconCancelLabel);
 
             leftPanel = new JPanel(new BorderLayout());
@@ -71,7 +75,7 @@ public class LoginView extends JFrame {
             usernameLabel = StyleComponents.formLabel("Tên đăng nhập", new Font("Jetbrains Mono", Font.PLAIN, 25), 40, 10);
             usernameLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-            usernameField = new JTextField(10);
+            usernameField = new JTextField("Tên đăng nhập....",10);
             usernameField.setPreferredSize(new Dimension(500, 50));
             usernameField.setMaximumSize(new Dimension(550, 50));
             RoundedRadiusHelper.radiusForTextField(usernameField, 20);
@@ -80,7 +84,7 @@ public class LoginView extends JFrame {
             passwordLabel = StyleComponents.formLabel("Mật khẩu", new Font("Jetbrains Mono", Font.PLAIN, 25), 40, 10);
             passwordLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-            passwordField = new JPasswordField(10);
+            passwordField = new JPasswordField("Mật khẩu....",10);
             passwordField.setPreferredSize(new Dimension(500, 50));
             passwordField.setMaximumSize(new Dimension(550, 50));
             RoundedRadiusHelper.radiusForTextField((JTextField) passwordField, 20);
@@ -94,6 +98,7 @@ public class LoginView extends JFrame {
             formPanel.add(passwordLabel);
             formPanel.add(Box.createVerticalStrut(5));
             formPanel.add(passwordField);
+
 
             JPanel bottomForm = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
             bottomForm.setOpaque(false);
@@ -117,9 +122,14 @@ public class LoginView extends JFrame {
             formPanel.add(Box.createVerticalStrut(10));
             formPanel.add(loginButton);
 
+
             this.add(rightPanel,BorderLayout.CENTER);
             this.add(topPanel,BorderLayout.NORTH);
             this.add(leftPanel,BorderLayout.WEST);
+
+            iconMinusLabel.addMouseListener(lgController);
+            iconCancelLabel.addMouseListener(lgController);
+            loginButton.addActionListener(lgController);
         }
 
     public JLabel getIconMinusLabel() {
@@ -146,13 +156,13 @@ public class LoginView extends JFrame {
         this.iconCancelLabel = iconCancelLabel;
     }
 
-    public JLabel getIconZoomLabel() {
-        return iconZoomLabel;
-    }
-
-    public void setIconZoomLabel(JLabel iconZoomLabel) {
-        this.iconZoomLabel = iconZoomLabel;
-    }
+//    public JLabel getIconZoomLabel() {
+//        return iconZoomLabel;
+//    }
+//
+//    public void setIconZoomLabel(JLabel iconZoomLabel) {
+//        this.iconZoomLabel = iconZoomLabel;
+//    }
 
     public JPanel getLeftPanel() {
         return leftPanel;
