@@ -41,7 +41,7 @@ public class LoginView extends JFrame {
             this.setVisible(true);
         }
         private void init() {
-            topPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT,10,10));
+            topPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT,15,10));
             topPanel.setPreferredSize(new Dimension(1000,50));
             FlatSVGIcon iconMinus = new FlatSVGIcon("icon/minus.svg",30,30);
 //            FlatSVGIcon iconZoom = new FlatSVGIcon("icon/zoom.svg",30,30);
