@@ -1,8 +1,10 @@
 package org.projects.View;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
+import org.projects.Helper.RefreshComponent;
 import org.projects.Helper.StyleComponents;
 import org.projects.Main;
+import org.projects.View.Panel.listFunctionPanel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -19,6 +21,7 @@ public class MainView extends JFrame {
     private JLabel positionLabel;
     //CENTER: NỘI DUNG CHỨC NĂNG
     private JPanel CenterPanel;
+    private CardLayout card;
     public MainView() {
         setTitle("BOOK STORE");
         setUndecorated(true);
@@ -82,9 +85,9 @@ public class MainView extends JFrame {
         //TODO: SAU NÀY KHI CÓ TÀI KHOẢN THÌ KHI ĐĂNG NHẬP SẼ LẤY TÊN CỦA NHÂN VIÊN ỨNG VỚI TÀI KHOẢN ĐÓ -> ĐƯA VÀO USERNAMELABEL
         //TODO: TƯƠNG TỰ CHỨC VỤ(POSITION)
         usernameLabel = new JLabel("Nguyễn Hoàng Anh",JLabel.LEFT);
-        usernameLabel.setFont(new Font("Jetbrains Mono",Font.BOLD,11));
+        usernameLabel.setFont(new Font("Jetbrains Mono",Font.BOLD,10));
         positionLabel = new JLabel("Quản lí",JLabel.LEFT);
-        positionLabel.setFont(new Font("Jetbrains Mono",Font.BOLD,10));
+        positionLabel.setFont(new Font("Jetbrains Mono",Font.BOLD,9));
 
         infoPanel.add(lbicon);
         infoPanel.add(usernameLabel);
@@ -98,8 +101,9 @@ public class MainView extends JFrame {
         layout.putConstraint(SpringLayout.NORTH,positionLabel,6,SpringLayout.SOUTH,usernameLabel);
 
 
-        JPanel functionPanel = new JPanel();
-        functionPanel.setBackground(Color.BLUE);
+        JPanel functionPanel = new listFunctionPanel(this);
+        functionPanel.setPreferredSize(new Dimension(250,800));
+
         JPanel logoutPanel = new JPanel();
         logoutPanel.setBackground(Color.RED);
 
@@ -125,5 +129,16 @@ public class MainView extends JFrame {
 
         WestPanel = west();
         this.add(WestPanel,BorderLayout.WEST);
+
+        card = new CardLayout();
+        CenterPanel = new JPanel(card);
+        this.add(CenterPanel,BorderLayout.CENTER);
+    }
+
+    public void addPanelCenter(JPanel panel) {
+            String namePanel = panel.getClass().getSimpleName();
+            CenterPanel.add(panel,namePanel);
+            card.show(CenterPanel,namePanel);
+            RefreshComponent.refreshComponent(CenterPanel);
     }
 }
