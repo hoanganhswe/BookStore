@@ -102,11 +102,24 @@ public class MainView extends JFrame {
 
 
         JPanel functionPanel = new listFunctionPanel(this);
+        functionPanel.setOpaque(false);
         functionPanel.setPreferredSize(new Dimension(250,800));
 
-        JPanel logoutPanel = new JPanel();
-        logoutPanel.setBackground(Color.RED);
-
+        JPanel logoutPanel = new JPanel(new FlowLayout(FlowLayout.LEFT,10,2));
+        logoutPanel.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        logoutPanel.setBackground(Color.LIGHT_GRAY);
+        FlatSVGIcon icon = new FlatSVGIcon("icon/logout.svg",20,20);
+        JLabel jlbicon = new JLabel(icon);
+        logoutPanel.add(jlbicon);
+        JLabel txtlogout = new JLabel("Đăng xuất",JLabel.CENTER);
+        logoutPanel.add(txtlogout);
+        txtlogout.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                dispose();
+                new LoginView();
+            }
+        });
         gbc.gridy = 0;
         gbc.weighty = 1;
         westPanel.add(infoPanel,gbc);
