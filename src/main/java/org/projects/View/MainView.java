@@ -70,49 +70,69 @@ public class MainView extends JFrame {
 
     public JPanel west() {
         JPanel westPanel = new JPanel(new GridBagLayout());
-        westPanel.setPreferredSize(new Dimension(200,900));
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx =0;
-        gbc.fill = GridBagConstraints.BOTH;
-        gbc.weightx = 1.0;
+        westPanel.setPreferredSize(new Dimension(200, 900));
 
+        // ---------- INFO PANEL ----------
         JPanel infoPanel = new JPanel();
         infoPanel.setBackground(Color.LIGHT_GRAY);
+        infoPanel.setPreferredSize(new Dimension(200, 20));  // cố định chiều cao
+
         SpringLayout layout = new SpringLayout();
         infoPanel.setLayout(layout);
-        FlatSVGIcon iconInfo = new FlatSVGIcon("icon/user.svg",80,80);
+
+        FlatSVGIcon iconInfo = new FlatSVGIcon("icon/user.svg", 80, 80);
         JLabel lbicon = new JLabel(iconInfo);
-        //TODO: SAU NÀY KHI CÓ TÀI KHOẢN THÌ KHI ĐĂNG NHẬP SẼ LẤY TÊN CỦA NHÂN VIÊN ỨNG VỚI TÀI KHOẢN ĐÓ -> ĐƯA VÀO USERNAMELABEL
-        //TODO: TƯƠNG TỰ CHỨC VỤ(POSITION)
-        usernameLabel = new JLabel("Nguyễn Hoàng Anh",JLabel.LEFT);
-        usernameLabel.setFont(new Font("Jetbrains Mono",Font.BOLD,10));
-        positionLabel = new JLabel("Quản lí",JLabel.LEFT);
-        positionLabel.setFont(new Font("Jetbrains Mono",Font.BOLD,9));
+
+        usernameLabel = new JLabel("Nguyễn Hoàng Anh", JLabel.LEFT);
+        usernameLabel.setFont(new Font("Jetbrains Mono", Font.BOLD, 10));
+
+        positionLabel = new JLabel("Quản lí", JLabel.LEFT);
+        positionLabel.setFont(new Font("Jetbrains Mono", Font.BOLD, 9));
 
         infoPanel.add(lbicon);
         infoPanel.add(usernameLabel);
         infoPanel.add(positionLabel);
 
-        layout.putConstraint(SpringLayout.WEST,lbicon,6,SpringLayout.WEST,infoPanel);
-        layout.putConstraint(SpringLayout.NORTH,lbicon,6,SpringLayout.NORTH,infoPanel);
-        layout.putConstraint(SpringLayout.WEST,usernameLabel,0,SpringLayout.EAST,lbicon);
-        layout.putConstraint(SpringLayout.NORTH,usernameLabel,25,SpringLayout.NORTH,infoPanel);
-        layout.putConstraint(SpringLayout.WEST,positionLabel,6,SpringLayout.WEST,usernameLabel);
-        layout.putConstraint(SpringLayout.NORTH,positionLabel,6,SpringLayout.SOUTH,usernameLabel);
+        layout.putConstraint(SpringLayout.WEST, lbicon, 6, SpringLayout.WEST, infoPanel);
+        layout.putConstraint(SpringLayout.NORTH, lbicon, 6, SpringLayout.NORTH, infoPanel);
+        layout.putConstraint(SpringLayout.WEST, usernameLabel, 0, SpringLayout.EAST, lbicon);
+        layout.putConstraint(SpringLayout.NORTH, usernameLabel, 25, SpringLayout.NORTH, infoPanel);
+        layout.putConstraint(SpringLayout.WEST, positionLabel, 6, SpringLayout.WEST, usernameLabel);
+        layout.putConstraint(SpringLayout.NORTH, positionLabel, 6, SpringLayout.SOUTH, usernameLabel);
 
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weightx = 1.0;
+        gbc.weighty = 0.2;
+        gbc.fill = GridBagConstraints.BOTH;
+        westPanel.add(infoPanel, gbc);
 
+        // ---------- FUNCTION PANEL ----------
         JPanel functionPanel = new listFunctionPanel(this);
         functionPanel.setOpaque(false);
-        functionPanel.setPreferredSize(new Dimension(250,800));
 
-        JPanel logoutPanel = new JPanel(new FlowLayout(FlowLayout.LEFT,10,2));
+        gbc = new GridBagConstraints(); // reset lại
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.weightx = 1.0;
+        gbc.weighty = 0.7;
+        gbc.fill = GridBagConstraints.BOTH;
+        westPanel.add(functionPanel, gbc);
+
+        // ---------- LOGOUT PANEL ----------
+        JPanel logoutPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 2));
         logoutPanel.setCursor(new Cursor(Cursor.HAND_CURSOR));
         logoutPanel.setBackground(Color.LIGHT_GRAY);
-        FlatSVGIcon icon = new FlatSVGIcon("icon/logout.svg",20,20);
+        logoutPanel.setPreferredSize(new Dimension(200, 40)); // cố định chiều cao
+
+        FlatSVGIcon icon = new FlatSVGIcon("icon/logout.svg", 20, 20);
         JLabel jlbicon = new JLabel(icon);
+        JLabel txtlogout = new JLabel("Đăng xuất", JLabel.CENTER);
+
         logoutPanel.add(jlbicon);
-        JLabel txtlogout = new JLabel("Đăng xuất",JLabel.CENTER);
         logoutPanel.add(txtlogout);
+
         txtlogout.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
@@ -120,19 +140,18 @@ public class MainView extends JFrame {
                 new LoginView();
             }
         });
-        gbc.gridy = 0;
-        gbc.weighty = 1;
-        westPanel.add(infoPanel,gbc);
 
-        gbc.gridy = 1;
-        gbc.weighty = 6;
-        westPanel.add(functionPanel,gbc);
-
+        gbc = new GridBagConstraints(); // reset lại
+        gbc.gridx = 0;
         gbc.gridy = 2;
-        gbc.weighty = 0.5;
-        westPanel.add(logoutPanel,gbc);
+        gbc.weightx = 1.0;
+        gbc.weighty = 0;
+        gbc.fill = GridBagConstraints.BOTH;
+        westPanel.add(logoutPanel, gbc);
+
         return westPanel;
     }
+
 
 
     private void init() {
