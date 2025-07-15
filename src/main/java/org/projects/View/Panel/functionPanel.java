@@ -1,6 +1,7 @@
 package org.projects.View.Panel;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
+import org.projects.Helper.RoundedRadiusHelper;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,14 +14,14 @@ public class functionPanel extends JPanel {
     public functionPanel(String iconPath,String nameFunction,String namePanel) {
         this.setLayout(new FlowLayout(FlowLayout.LEFT,10,2));
         setBackground(Color.lightGray);
-        this.setOpaque(false);
-
+        this.setOpaque(true);
         FlatSVGIcon icon = new FlatSVGIcon(iconPath,20,20);
         iconLabel = new JLabel(icon,JLabel.LEFT);
         this.add(iconLabel);
 
         nameFunctionLabel = new JLabel(nameFunction,JLabel.CENTER);
-        nameFunctionLabel.setFont(new Font("JetBrains Mono",Font.BOLD,13));
+        nameFunctionLabel.setAlignmentY(JLabel.CENTER);
+        nameFunctionLabel.setFont(new Font("JetBrains Mono",Font.BOLD,15));
         this.add(nameFunctionLabel);
     }
 

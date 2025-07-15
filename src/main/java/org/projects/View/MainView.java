@@ -75,7 +75,7 @@ public class MainView extends JFrame {
         // ---------- INFO PANEL ----------
         JPanel infoPanel = new JPanel();
         infoPanel.setBackground(Color.LIGHT_GRAY);
-        infoPanel.setPreferredSize(new Dimension(200, 20));  // cố định chiều cao
+        infoPanel.setPreferredSize(new Dimension(200, 40));  // cố định chiều cao
 
         SpringLayout layout = new SpringLayout();
         infoPanel.setLayout(layout);
@@ -104,7 +104,7 @@ public class MainView extends JFrame {
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.weightx = 1.0;
-        gbc.weighty = 0.2;
+        gbc.weighty = 0.1;
         gbc.fill = GridBagConstraints.BOTH;
         westPanel.add(infoPanel, gbc);
 
@@ -129,6 +129,7 @@ public class MainView extends JFrame {
         FlatSVGIcon icon = new FlatSVGIcon("icon/logout.svg", 20, 20);
         JLabel jlbicon = new JLabel(icon);
         JLabel txtlogout = new JLabel("Đăng xuất", JLabel.CENTER);
+        txtlogout.setFont(new Font("Jetbrains Mono",Font.BOLD,15));
 
         logoutPanel.add(jlbicon);
         logoutPanel.add(txtlogout);
@@ -151,8 +152,6 @@ public class MainView extends JFrame {
 
         return westPanel;
     }
-
-
 
     private void init() {
         this.setLayout(new BorderLayout());
